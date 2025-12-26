@@ -47,6 +47,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     install(FILES Stirlitz.png
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/128x128/apps")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
+    set_property(TARGET Stirlitz PROPERTY WIN32_EXECUTABLE true)
     install(FILES Stirlitz.ico
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/128x128/apps")
 endif()
