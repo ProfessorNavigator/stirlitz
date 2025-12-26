@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=Stirlitz
+Comment=Text and files encryption
+GenericName=Stirlitz
+Exec=Stirlitz
+Icon=Stirlitz
+Categories=Office;
+Terminal=false
+Type=Application
+Version=1.5
+Name[ru]=Stirlitz
+Comment[ru]=Программа шифрования текста и файлов
+GenericName[ru]=Stirlitz
+Name[ru_RU]=Stirlitz
