@@ -21,9 +21,11 @@
 #include <QLineEdit>
 #include <QMainWindow>
 #include <QScrollArea>
+#include <QShowEvent>
 #include <Stirlitz.h>
 #include <TextTabWidget.h>
 #include <filesystem>
+#include <thread>
 
 class MainWindow : public QMainWindow
 {
@@ -59,6 +61,8 @@ private:
 
   std::filesystem::path home_p;
 
+  std::thread *warn_thread = nullptr;
+
   Stirlitz *spy;
   std::shared_ptr<gcry_sexp> key_pair;
   std::shared_ptr<gcry_sexp> other_key;
@@ -72,5 +76,9 @@ private:
   FileTabWidget *file_tab;
 
   bool one_time_profile = false;
+
+signals:
+  void
+  showWarning();
 };
 #endif // MAINWINDOW_H

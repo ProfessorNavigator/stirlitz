@@ -47,11 +47,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
   spy = new Stirlitz;
 
-  enterWindow();
+  enterWindow();  
 }
 
 MainWindow::~MainWindow()
 {
+  if(warn_thread)
+    {
+      warn_thread->join();
+      delete warn_thread;
+    }
   if(u_name)
     {
       gcry_free(u_name);
@@ -186,6 +191,45 @@ MainWindow::enterWindow()
 #ifndef __ANDROID__
   this->adjustSize();
 #endif
+  connect(this, &MainWindow::showWarning, this,
+          [this]
+            {
+              std::filesystem::path p
+                  = home_p / std::filesystem::u8path("warn");
+              if(!std::filesystem::exists(p))
+                {
+                  QMessageBox *msg = new QMessageBox(this);
+                  msg->setAttribute(Qt::WA_DeleteOnClose);
+                  msg->setWindowModality(Qt::WindowModal);
+
+                  msg->setIcon(QMessageBox::Warning);
+                  msg->setText(
+                      tr("This version profiles and files are not compatible "
+                         "with version 1.0 profiles and files!"));
+
+                  msg->show();
+
+                  std::filesystem::create_directories(p.parent_path());
+                  std::fstream f;
+                  f.open(p, std::ios_base::out | std::ios_base::binary);
+                  if(f.is_open())
+                    {
+                      char tmp = '1';
+                      f.write(&tmp, sizeof(tmp));
+                      f.close();
+                    }
+                }
+            });
+
+  if(warn_thread == nullptr)
+    {
+      warn_thread = new std::thread(
+          [this]
+            {
+              std::this_thread::sleep_for(std::chrono::milliseconds(100));
+              emit showWarning();
+            });
+    }
 }
 
 void

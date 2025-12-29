@@ -110,7 +110,7 @@
     <message>
         <location filename="../src/FileTabWidget.cpp" line="279"/>
         <source>File has been successfully encrypted</source>
-        <translation>Файл бы успешно расшифрован</translation>
+        <translation>Файл бы успешно зашифрован</translation>
     </message>
     <message>
         <location filename="../src/FileTabWidget.cpp" line="285"/>
@@ -159,103 +159,112 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/MainWindow.cpp" line="114"/>
+        <location filename="../src/MainWindow.cpp" line="117"/>
         <source>User name</source>
         <translation>Имя пользователя</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="118"/>
+        <location filename="../src/MainWindow.cpp" line="121"/>
         <source>Password</source>
         <translation>Пароль</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="128"/>
+        <location filename="../src/MainWindow.cpp" line="138"/>
         <source>Load profile</source>
         <translation>Загрузить профиль</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="156"/>
+        <location filename="../src/MainWindow.cpp" line="147"/>
         <source>Creat profile</source>
         <translation>Создать профиль</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="173"/>
+        <location filename="../src/MainWindow.cpp" line="164"/>
         <source>One-time profile</source>
         <translation>Одноразовый профиль</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="183"/>
+        <location filename="../src/MainWindow.cpp" line="174"/>
         <source>Local file encryption/decryption</source>
         <translation>Шифрование/расшифровка локального файла</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="195"/>
+        <location filename="../src/MainWindow.cpp" line="186"/>
         <source>Close</source>
         <translation>Закрыть</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="297"/>
+        <source>This version profiles and files are not compatible with version 1.0 files!</source>
+        <translation type="vanished">Профили и файлы этой версии несовместимы с файлами версии 1.0!</translation>
+    </message>
+    <message>
+        <location filename="../src/MainWindow.cpp" line="207"/>
+        <source>This version profiles and files are not compatible with version 1.0 profiles and files!</source>
+        <translation>Профили и файлы этой версии несовместимы с профилями и файлами версии 1.0!</translation>
+    </message>
+    <message>
+        <location filename="../src/MainWindow.cpp" line="351"/>
         <source>Leave profile</source>
         <translation>Выйти из профиля</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="305"/>
+        <location filename="../src/MainWindow.cpp" line="359"/>
         <source>Remove profile</source>
         <translation>Удалить профиль</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="313"/>
+        <location filename="../src/MainWindow.cpp" line="367"/>
         <source>Close application</source>
         <translation>Закрыть приложение</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="325"/>
+        <location filename="../src/MainWindow.cpp" line="379"/>
         <source>Text</source>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="328"/>
+        <location filename="../src/MainWindow.cpp" line="382"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="332"/>
+        <location filename="../src/MainWindow.cpp" line="386"/>
         <source>Local file encryption</source>
         <translation>Шифрование локального файла</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="348"/>
+        <location filename="../src/MainWindow.cpp" line="402"/>
         <source>Incorrect user name or password!</source>
         <translation>Неверное имя пользователя или пароль!</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="367"/>
+        <location filename="../src/MainWindow.cpp" line="421"/>
         <source>Own key:</source>
         <translation>Собственный ключ:</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="384"/>
+        <location filename="../src/MainWindow.cpp" line="438"/>
         <source>Copy</source>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="398"/>
+        <location filename="../src/MainWindow.cpp" line="452"/>
         <source>Reset</source>
         <translation>Задать новый</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="417"/>
-        <location filename="../src/MainWindow.cpp" line="639"/>
+        <location filename="../src/MainWindow.cpp" line="471"/>
+        <location filename="../src/MainWindow.cpp" line="693"/>
         <source>Are you sure?</source>
         <translation>Вы уверены?</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="497"/>
+        <location filename="../src/MainWindow.cpp" line="551"/>
         <source>Other key:</source>
         <translation>Ключ оппоненета:</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="555"/>
+        <location filename="../src/MainWindow.cpp" line="609"/>
         <source>Set</source>
         <translation>Задать</translation>
     </message>

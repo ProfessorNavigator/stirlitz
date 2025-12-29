@@ -1,5 +1,5 @@
 # Stirlitz
-Stirlitz is designed for text and files encryption. Encryption can be carried out for text and files transmission by public communications channels (encryption based on Ed25519 public keys algorithm and on AES256 algorithm) and for local files encryption (based on simple user name, password and AES256 algorithm). GUI is based on Qt6. Cryptographic method are moved to stirlitz library (can be used independently).
+Stirlitz is designed for text and files encryption. Encryption can be carried out for text and files transmission by public communications channels (encryption based on Ed25519 public keys algorithm and on AES256 algorithm) and for local files (based on simple user name, password and AES256 algorithm). GUI is based on Qt6. Cryptographic method are moved to stirlitz library (can be used independently).
 
 ## Installation
 ### Linux
@@ -34,7 +34,7 @@ Stirlitz includes stirlitz library. To build html documentation for this library
 Android users can build project from sources by Android NDK or can use experimental packages from [Github](https://github.com/ProfessorNavigator/stirlitz) project releases.
 
 ## Dependencies
-You need [Qt6](https://www.qt.io/) library (Core ans Widgets components), [libgcrypt](https://www.gnupg.org/software/libgcrypt/), [libgpg-error](https://www.gnupg.org/software/libgpg-error/). Also you need [СMake](https://cmake.org/) for building. If you plan to build stirlitz documentation, you also need doxygen.
+You need [Qt6](https://www.qt.io/) library (Core and Widgets components), [libgcrypt](https://www.gnupg.org/software/libgcrypt/), [libgpg-error](https://www.gnupg.org/software/libgpg-error/). Also you need [СMake](https://cmake.org/) for building. If you plan to build stirlitz documentation, you also need doxygen.
 
 ## Notes
 Stirlitz includes stirlitz library (can be found ind stirlitz directory). To use stirlitz library independently you can build it by same commands as noted in `Installation`. You need [libgcrypt](https://www.gnupg.org/software/libgcrypt/), [libgpg-error](https://www.gnupg.org/software/libgpg-error/) and [СMake](https://cmake.org/).

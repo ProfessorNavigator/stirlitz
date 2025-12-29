@@ -250,7 +250,10 @@ Stirlitz::encryptData(const std::string &username, const std::string &password,
              gcry_cipher_close(hd);
            });
 
-  std::vector<unsigned char> hash = hashString(username, GCRY_MD_BLAKE2S_128);
+  size_t block_sz = gcry_cipher_get_algo_blklen(GCRY_CIPHER_AES256);
+  std::vector<unsigned char> hash;
+  hash.resize(block_sz);
+  gcry_create_nonce(hash.data(), hash.size());
 
   err = gcry_cipher_setiv(hd.get(), hash.data(), hash.size());
   if(err != 0)
@@ -258,7 +261,8 @@ Stirlitz::encryptData(const std::string &username, const std::string &password,
       printGcryptError(err, "Stirlitz::encryptData");
     }
 
-  hash = hashString(password, GCRY_MD_BLAKE2S_256);
+  std::string pass_str = username + password;
+  hash = hashString(pass_str, GCRY_MD_BLAKE2S_256);
 
   err = gcry_cipher_setkey(hd.get(), hash.data(), hash.size());
   if(err != 0)
@@ -267,19 +271,12 @@ Stirlitz::encryptData(const std::string &username, const std::string &password,
     }
 
   std::vector<unsigned char> in;
-  in.reserve(data.size() + 1);
-  in.resize(data.size());
-  std::memcpy(in.data(), data.c_str(), data.size());
-  size_t block_sz = gcry_cipher_get_algo_blklen(GCRY_CIPHER_AES256);
-  size_t sz = in.size();
-  unsigned char extra = 0;
-  if(sz < block_sz)
-    {
-      in.resize(block_sz);
-      extra = static_cast<unsigned char>(block_sz - sz);
-      gcry_randomize(in.data() + sz, block_sz - sz, GCRY_WEAK_RANDOM);
-    }
-  in.push_back(extra);
+  in.reserve(data.size() + block_sz);
+  in.resize(block_sz);
+  gcry_randomize(in.data(), in.size(), GCRY_STRONG_RANDOM);
+
+  in.resize(in.size() + data.size());
+  std::memcpy(in.data() + block_sz, data.c_str(), data.size());
 
   result.resize(in.size());
 
@@ -299,7 +296,8 @@ Stirlitz::decryptData(const std::string &username, const std::string &password,
                       const std::string &data)
 {
   std::string result;
-  if(data.empty())
+  size_t block_sz = gcry_cipher_get_algo_blklen(GCRY_CIPHER_AES256);
+  if(data.size() < block_sz)
     {
       return result;
     }
@@ -322,7 +320,9 @@ Stirlitz::decryptData(const std::string &username, const std::string &password,
              gcry_cipher_close(hd);
            });
 
-  std::vector<unsigned char> hash = hashString(username, GCRY_MD_BLAKE2S_128);
+  std::vector<unsigned char> hash;
+  hash.resize(block_sz);
+  gcry_create_nonce(hash.data(), hash.size());
 
   err = gcry_cipher_setiv(hd.get(), hash.data(), hash.size());
   if(err != 0)
@@ -330,7 +330,8 @@ Stirlitz::decryptData(const std::string &username, const std::string &password,
       printGcryptError(err, "Stirlitz::decryptData");
     }
 
-  hash = hashString(password, GCRY_MD_BLAKE2S_256);
+  std::string pass_str = username + password;
+  hash = hashString(pass_str, GCRY_MD_BLAKE2S_256);
 
   err = gcry_cipher_setkey(hd.get(), hash.data(), hash.size());
   if(err != 0)
@@ -349,16 +350,7 @@ Stirlitz::decryptData(const std::string &username, const std::string &password,
       printGcryptError(err, "Stirlitz::decryptData");
     }
 
-  unsigned char extra = static_cast<unsigned char>(*result.rbegin());
-  if(result.size() > 0)
-    {
-      result.pop_back();
-    }
-  while(extra > 0 && result.size() > 0)
-    {
-      result.pop_back();
-      extra--;
-    }
+  result.erase(result.begin(), result.begin() + block_sz);
   result.shrink_to_fit();
 
   return result;
@@ -387,7 +379,8 @@ Stirlitz::encryptFile(const std::filesystem::path &source_file,
              gcry_cipher_close(hd);
            });
 
-  std::vector<unsigned char> hash = hashString(password, GCRY_MD_BLAKE2S_256);
+  std::string pass_str = username + password;
+  std::vector<unsigned char> hash = hashString(pass_str, GCRY_MD_BLAKE2S_256);
 
   err = gcry_cipher_setkey(hd.get(), hash.data(), hash.size());
   if(err != 0)
@@ -426,21 +419,31 @@ Stirlitz::encryptFile(const std::filesystem::path &source_file,
     }
 
   size_t read_b = 0;
-  size_t buf_sz = 1024;
-  std::vector<unsigned char> buf;
-  buf.reserve(buf_sz);
-  std::vector<unsigned char> result_buf;
-  result_buf.reserve(buf_sz);
-
+  size_t buf_sz = 10485744;
   size_t block_sz = gcry_cipher_get_algo_blklen(GCRY_CIPHER_AES256);
+  std::vector<unsigned char> buf;
+  buf.reserve(buf_sz + block_sz);
+  std::vector<unsigned char> result_buf;
+  result_buf.reserve(buf_sz + block_sz);
 
   size_t dif;
 
-  char extra_b = 0;
   size_t sz;
-  hash = hashString(username, GCRY_MD_BLAKE2S_128);
+
   while(read_b < fsz)
     {
+      err = gcry_cipher_reset(hd.get());
+      if(err != 0)
+        {
+          f_source.close();
+          f_result.close();
+          std::filesystem::remove_all(result);
+          printGcryptError(err, "Stirlitz::encryptFile gcry_cipher_reset:");
+        }
+
+      hash.clear();
+      hash.resize(block_sz);
+      gcry_create_nonce(hash.data(), hash.size());
       err = gcry_cipher_setiv(hd.get(), hash.data(), hash.size());
       if(err != 0)
         {
@@ -453,23 +456,17 @@ Stirlitz::encryptFile(const std::filesystem::path &source_file,
       dif = fsz - read_b;
       if(buf_sz < dif)
         {
-          buf.resize(buf_sz);
+          sz = buf_sz;
+          buf.resize(buf_sz + block_sz);
         }
       else
         {
-          buf.resize(dif);
+          sz = dif;
+          buf.resize(dif + block_sz);
         }
-      f_source.read(reinterpret_cast<char *>(buf.data()), buf.size());
-      read_b += buf.size();
-
-      sz = buf.size();
-      if(sz < block_sz)
-        {
-          size_t extra = block_sz - sz;
-          buf.resize(block_sz);
-          gcry_randomize(buf.data() + sz, extra, GCRY_WEAK_RANDOM);
-          extra_b = static_cast<char>(extra);
-        }
+      gcry_create_nonce(buf.data(), block_sz);
+      f_source.read(reinterpret_cast<char *>(buf.data() + block_sz), sz);
+      read_b += sz;
 
       result_buf.clear();
       result_buf.resize(buf.size());
@@ -485,18 +482,7 @@ Stirlitz::encryptFile(const std::filesystem::path &source_file,
         }
       f_result.write(reinterpret_cast<char *>(result_buf.data()),
                      result_buf.size());
-
-      err = gcry_cipher_reset(hd.get());
-      if(err != 0)
-        {
-          f_source.close();
-          f_result.close();
-          std::filesystem::remove_all(result);
-          printGcryptError(err, "Stirlitz::encryptFile gcry_cipher_reset:");
-        }
     }
-
-  f_result.write(&extra_b, sizeof(extra_b));
 
   f_source.close();
   f_result.close();
@@ -525,7 +511,8 @@ Stirlitz::decryptFile(const std::filesystem::path &source_file,
              gcry_cipher_close(hd);
            });
 
-  std::vector<unsigned char> hash = hashString(password, GCRY_MD_BLAKE2S_256);
+  std::string pass_str = username + password;
+  std::vector<unsigned char> hash = hashString(pass_str, GCRY_MD_BLAKE2S_256);
 
   err = gcry_cipher_setkey(hd.get(), hash.data(), hash.size());
   if(err != 0)
@@ -557,31 +544,42 @@ Stirlitz::decryptFile(const std::filesystem::path &source_file,
   fsz = f_source.tellg();
   f_source.seekg(0, std::ios_base::beg);
 
-  if(fsz == 0)
+  size_t block_sz = gcry_cipher_get_algo_blklen(GCRY_CIPHER_AES256);
+  if(fsz < block_sz)
     {
       f_source.close();
       throw std::runtime_error("Stirlitz::decryptFile: incorrect file(1)");
     }
 
   size_t read_b = 0;
-  size_t buf_sz = 1024;
+  size_t buf_sz = 10485760;
   std::vector<unsigned char> buf;
   buf.reserve(buf_sz);
   std::vector<unsigned char> result_buf;
   result_buf.reserve(buf_sz);
 
-  size_t block_sz = gcry_cipher_get_algo_blklen(GCRY_CIPHER_AES256);
-
   size_t dif;
 
-  size_t sz;
-  hash = hashString(username, GCRY_MD_BLAKE2S_128);
-  bool last = false;
-  while(read_b < fsz - 1)
+  while(read_b < fsz)
     {
+      err = gcry_cipher_reset(hd.get());
+      if(err != 0)
+        {
+          f_source.close();
+          f_result.close();
+          std::filesystem::remove_all(result);
+          printGcryptError(err, "Stirlitz::decryptFile gcry_cipher_reset:");
+        }
+
+      hash.clear();
+      hash.resize(block_sz);
+      gcry_create_nonce(hash.data(), hash.size());
       err = gcry_cipher_setiv(hd.get(), hash.data(), hash.size());
       if(err != 0)
         {
+          f_source.close();
+          f_result.close();
+          std::filesystem::remove_all(result);
           printGcryptError(err, "Stirlitz::decryptFile gcry_cipher_setiv:");
         }
       buf.clear();
@@ -592,20 +590,10 @@ Stirlitz::decryptFile(const std::filesystem::path &source_file,
         }
       else
         {
-          buf.resize(dif - 1);
-          last = true;
+          buf.resize(dif);
         }
       f_source.read(reinterpret_cast<char *>(buf.data()), buf.size());
       read_b += buf.size();
-
-      sz = buf.size();
-      if(sz < block_sz)
-        {
-          f_source.close();
-          f_result.close();
-          std::filesystem::remove_all(result);
-          throw std::runtime_error("Stirlitz::decryptFile: incorrect file(2)");
-        }
 
       result_buf.clear();
       result_buf.resize(buf.size());
@@ -619,39 +607,15 @@ Stirlitz::decryptFile(const std::filesystem::path &source_file,
           std::filesystem::remove_all(result);
           printGcryptError(err, "Stirlitz::decryptFile:");
         }
-      if(last)
-        {
-          char val;
-          f_source.read(&val, sizeof(val));
-          read_b += sizeof(val);
-          sz = static_cast<size_t>(val);
-          if(sz <= result_buf.size())
-            {
-              f_result.write(reinterpret_cast<char *>(result_buf.data()),
-                             result_buf.size() - sz);
-            }
-          else
-            {
-              f_source.close();
-              f_result.close();
-              std::filesystem::remove_all(result);
-              throw std::runtime_error(
-                  "Stirlitz::decryptFile: incorrect file(3)");
-            }
-        }
-      else
-        {
-          f_result.write(reinterpret_cast<char *>(result_buf.data()),
-                         result_buf.size());
-        }
-      err = gcry_cipher_reset(hd.get());
-      if(err != 0)
+      if(result_buf.size() < block_sz)
         {
           f_source.close();
           f_result.close();
           std::filesystem::remove_all(result);
-          printGcryptError(err, "Stirlitz::decryptFile gcry_cipher_reset:");
+          throw std::runtime_error("Stirlitz::decryptFile: incorrect file");
         }
+      f_result.write(reinterpret_cast<char *>(result_buf.data() + block_sz),
+                     result_buf.size() - block_sz);
     }
 
   f_source.close();
@@ -708,43 +672,41 @@ Stirlitz::getPublicKeyString(std::shared_ptr<gcry_sexp> key)
       return result;
     }
 
-  std::shared_ptr<gcry_sexp> pk(exp,
-                                [](gcry_sexp *exp)
-                                  {
-                                    gcry_sexp_release(exp);
-                                  });
+  std::unique_ptr<gcry_sexp, std::function<void(gcry_sexp *)>> val(
+      exp,
+      [](gcry_sexp *exp)
+        {
+          gcry_sexp_release(exp);
+        });
 
-  std::string pk_str = sexpToString(pk);
-  find_str = "1:q";
-  std::string::size_type n = pk_str.find(find_str);
-  if(n == std::string::npos)
-    {
-      return result;
-    }
-  n += find_str.size();
-
-  find_str = ":";
-  std::string::size_type n2 = pk_str.find(find_str, n);
-  if(n2 == std::string::npos)
+  exp = gcry_sexp_find_token(val.get(), "q", 1);
+  if(exp == nullptr)
     {
       return result;
     }
 
-  std::string num_str;
-  std::copy(pk_str.begin() + n, pk_str.begin() + n2,
-            std::back_inserter(num_str));
-  std::stringstream strm;
-  strm.imbue(std::locale("C"));
-  strm.str(num_str);
-  size_t sz;
-  strm >> sz;
-  n2 += find_str.size();
-  if(n2 + sz < pk_str.size())
+  val = std::unique_ptr<gcry_sexp, std::function<void(gcry_sexp *)>>(
+      exp,
+      [](gcry_sexp *exp)
+        {
+          gcry_sexp_release(exp);
+        });
+
+  size_t len;
+  const char *data = gcry_sexp_nth_data(val.get(), 1, &len);
+  if(data)
     {
-      std::string val;
-      std::copy(pk_str.begin() + n2, pk_str.begin() + n2 + sz,
-                std::back_inserter(val));
-      result = toHex(val);
+      std::string loc;
+      loc.resize(len);
+      for(size_t i = 0; i < len; i++)
+        {
+          loc[i] = data[i];
+        }
+      result = toHex(loc);
+    }
+  else
+    {
+      throw std::runtime_error("Stirlitz::getPublicKeyString: incorrect data");
     }
 
   return result;
@@ -1034,7 +996,7 @@ Stirlitz::genUsernamePasswordDecryption(
   else
     {
       throw std::runtime_error(
-          "Stirlitz::genUsernamePasswordDecryption: incorrect value(1)");
+          "Stirlitz::genUsernamePasswordDecryption: incorrect value(2)");
     }
 
   return result;
