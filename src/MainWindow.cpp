@@ -546,7 +546,7 @@ MainWindow::otherKeyWidget(const std::filesystem::path &prof_p)
   result->setLayout(v_box);
 
   QLabel *lab = new QLabel;
-  lab->setText(tr("Other key:"));
+  lab->setText(tr("Interlocutor's key:"));
   v_box->addWidget(lab, 1, Qt::AlignLeft);
 
   QScrollArea *scrl = new QScrollArea;

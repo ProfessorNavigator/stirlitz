@@ -194,77 +194,73 @@
         <translation>Закрыть</translation>
     </message>
     <message>
-        <source>This version profiles and files are not compatible with version 1.0 files!</source>
-        <translation type="vanished">Профили и файлы этой версии несовместимы с файлами версии 1.0!</translation>
-    </message>
-    <message>
         <location filename="../src/MainWindow.cpp" line="207"/>
         <source>This version profiles and files are not compatible with version 1.0 profiles and files!</source>
         <translation>Профили и файлы этой версии несовместимы с профилями и файлами версии 1.0!</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="351"/>
+        <location filename="../src/MainWindow.cpp" line="349"/>
         <source>Leave profile</source>
         <translation>Выйти из профиля</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="359"/>
+        <location filename="../src/MainWindow.cpp" line="357"/>
         <source>Remove profile</source>
         <translation>Удалить профиль</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="367"/>
+        <location filename="../src/MainWindow.cpp" line="365"/>
         <source>Close application</source>
         <translation>Закрыть приложение</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="379"/>
+        <location filename="../src/MainWindow.cpp" line="377"/>
         <source>Text</source>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="382"/>
+        <location filename="../src/MainWindow.cpp" line="380"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="386"/>
+        <location filename="../src/MainWindow.cpp" line="384"/>
         <source>Local file encryption</source>
         <translation>Шифрование локального файла</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="402"/>
+        <location filename="../src/MainWindow.cpp" line="400"/>
         <source>Incorrect user name or password!</source>
         <translation>Неверное имя пользователя или пароль!</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="421"/>
+        <location filename="../src/MainWindow.cpp" line="419"/>
         <source>Own key:</source>
         <translation>Собственный ключ:</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="438"/>
+        <location filename="../src/MainWindow.cpp" line="436"/>
         <source>Copy</source>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="452"/>
+        <location filename="../src/MainWindow.cpp" line="450"/>
         <source>Reset</source>
         <translation>Задать новый</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="471"/>
-        <location filename="../src/MainWindow.cpp" line="693"/>
+        <location filename="../src/MainWindow.cpp" line="469"/>
+        <location filename="../src/MainWindow.cpp" line="691"/>
         <source>Are you sure?</source>
         <translation>Вы уверены?</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="551"/>
-        <source>Other key:</source>
-        <translation>Ключ оппоненета:</translation>
+        <location filename="../src/MainWindow.cpp" line="549"/>
+        <source>Interlocutor&apos;s key:</source>
+        <translation>Ключ собеседника:</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="609"/>
+        <location filename="../src/MainWindow.cpp" line="607"/>
         <source>Set</source>
         <translation>Задать</translation>
     </message>
