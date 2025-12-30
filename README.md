@@ -1,5 +1,5 @@
 # Stirlitz
-Stirlitz is designed for text and files encryption. Encryption can be carried out for text and files transmission by public communications channels (encryption based on Ed25519 public keys algorithm and on AES256 algorithm) and for local files (based on simple user name, password and AES256 algorithm). GUI is based on Qt6. Cryptographic method are moved to stirlitz library (can be used independently).
+Stirlitz is designed for text and files encryption. Encryption can be carried out for text and files transmission by public communications channels (encryption based on Ed25519 public keys algorithm and on AES256 algorithm) and for local files (based on simple user name, password and AES256 algorithm). GUI is based on Qt6. Cryptographic methods are moved to stirlitz library (can be used independently).
 
 ## Installation
 ### Linux
