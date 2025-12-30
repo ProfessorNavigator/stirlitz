@@ -1,6 +1,5 @@
 target_sources(Stirlitz
     PRIVATE CreateProfileWindow.cpp
-    PRIVATE ElidedLabel.cpp
     PRIVATE FileTabWidget.cpp
     PRIVATE KeySetWindow.cpp
     PRIVATE main.cpp
